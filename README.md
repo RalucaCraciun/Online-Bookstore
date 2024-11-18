@@ -24,4 +24,4 @@ The Online Bookstore is a web application that integrates Elasticsearch to demon
 - Ion Ioana Nicola
 - Nastase Ana-Maria
 
-  ## RESTFUL Resources
+## RESTFUL Resources
