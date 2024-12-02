@@ -1,0 +1,406 @@
+openapi: 3.0.0
+info:
+  title: Online Bookstore API
+  version: 1.0.0
+  description: API documentation for an online bookstore.
+
+servers:
+  - url: https://api.onlinebookstore.com
+    description: Production server
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: "123456"
+        name:
+          type: string
+          example: "John Doe"
+        email:
+          type: string
+          example: "john.doe@example.com"
+        location:
+          type: string
+          example: "New York, USA"
+        token:
+          type: string
+          example: "abcdef123456"
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          example: "john.doe@example.com"
+        password:
+          type: string
+          format: password
+          example: "password123"
+      required:
+        - email
+        - password
+
+    RegisterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "John Doe"
+        email:
+          type: string
+          example: "john.doe@example.com"
+        password:
+          type: string
+          format: password
+          example: "password123"
+      required:
+        - name
+        - email
+        - password
+
+    Book:
+      type: object
+      properties:
+        bookId:
+          type: string
+          example: "abc123"
+        title:
+          type: string
+          example: "The Great Gatsby"
+        author:
+          type: string
+          example: "F. Scott Fitzgerald"
+        genre:
+          type: string
+          example: "Fiction"
+        price:
+          type: number
+          format: float
+          example: 15.99
+        description:
+          type: string
+          example: "A classic novel about the American Dream."
+        stock:
+          type: integer
+          example: 50
+        rating:
+          type: number
+          format: float
+          example: 4.5
+
+    BookRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "The Great Gatsby"
+        author:
+          type: string
+          example: "F. Scott Fitzgerald"
+        genre:
+          type: string
+          example: "Fiction"
+        price:
+          type: number
+          format: float
+          example: 15.99
+        description:
+          type: string
+          example: "A classic novel about the American Dream."
+        stock:
+          type: integer
+          example: 50
+      required:
+        - title
+        - author
+        - genre
+        - price
+        - description
+        - stock
+
+    CartItem:
+      type: object
+      properties:
+        bookId:
+          type: string
+          example: "abc123"
+        quantity:
+          type: integer
+          example: 2
+
+    Cart:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartItem"
+        totalPrice:
+          type: number
+          format: float
+          example: 31.98
+
+    Order:
+      type: object
+      properties:
+        orderId:
+          type: string
+          example: "order123"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartItem"
+        totalPrice:
+          type: number
+          format: float
+          example: 31.98
+        status:
+          type: string
+          example: "Pending"
+        placedAt:
+          type: string
+          format: date-time
+          example: "2024-12-02T12:34:56Z"
+
+  responses:
+    UnauthorizedError:
+      description: Unauthorized access
+    NotFoundError:
+      description: Resource not found
+    BadRequestError:
+      description: Invalid request data
+
+paths:
+  /register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /login:
+    post:
+      summary: Authenticate a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: User authenticated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /logout:
+    post:
+      summary: Log out the user
+      responses:
+        '200':
+          description: User logged out successfully
+
+  /users/{userId}:
+    put:
+      summary: Update a user profile
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "123456"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                location:
+                  type: string
+      responses:
+        '200':
+          description: User profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /books:
+    get:
+      summary: Retrieve a list of books
+      parameters:
+        - name: title
+          in: query
+          schema:
+            type: string
+        - name: author
+          in: query
+          schema:
+            type: string
+        - name: genre
+          in: query
+          schema:
+            type: string
+        - name: priceRange
+          in: query
+          schema:
+            type: string
+        - name: rating
+          in: query
+          schema:
+            type: number
+      responses:
+        '200':
+          description: List of books retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+
+    post:
+      summary: Add a new book to the store (admin-only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookRequest'
+      responses:
+        '201':
+          description: Book added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+
+  /books/{bookId}:
+    get:
+      summary: Retrieve details of a specific book
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Book details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+
+    put:
+      summary: Update details of a book (admin-only)
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookRequest'
+      responses:
+        '200':
+          description: Book details updated successfully
+
+    delete:
+      summary: Remove a book from the store (admin-only)
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Book deleted successfully
+
+  /cart:
+    post:
+      summary: Add an item to the shopping cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartItem'
+      responses:
+        '201':
+          description: Item added to cart successfully
+
+    get:
+      summary: Retrieve the current contents of the shopping cart
+      responses:
+        '200':
+          description: Shopping cart details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+
+  /cart/{bookId}:
+    delete:
+      summary: Remove a specific book from the cart
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Book removed from cart successfully
+
+  /orders:
+    post:
+      summary: Place an order
+      responses:
+        '201':
+          description: Order placed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+
+  /orders/{orderId}:
+    get:
+      summary: Retrieve details of a specific order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
