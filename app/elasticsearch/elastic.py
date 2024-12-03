@@ -1,6 +1,6 @@
 from elasticsearch import Elasticsearch
 import os
-from app.elasticsearch.create_index import create_books_index, create_orders_index, create_cart_index
+from app.elasticsearch.create_index import create_books_index, create_orders_index, create_cart_index, create_user_index
 
 # Global Elasticsearch client
 es_client: Elasticsearch = None
@@ -20,6 +20,7 @@ def connect_to_elastic():
             create_books_index(es)
             create_cart_index(es)
             create_orders_index(es)
+            create_user_index(es)
 
             return es, True
         else:

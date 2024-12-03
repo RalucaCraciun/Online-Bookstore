@@ -105,3 +105,27 @@ def create_orders_index(es: Elasticsearch):
             print(f"Index {ORDERS_INDEX} already exists.")
     except Exception as e:
         print(f"Failed to create index {ORDERS_INDEX}: {e}")
+
+
+USER_INDEX = "users"
+
+
+def create_user_index(es: Elasticsearch):
+    """
+    Create the 'users' index in Elasticsearch if it doesn't exist.
+    """
+    if not es.indices.exists(index=USER_INDEX):
+        es.indices.create(
+            index=USER_INDEX,
+            body={
+                "settings": {"number_of_shards": 1, "number_of_replicas": 1},
+                "mappings": {
+                    "properties": {
+                        "userId": {"type": "keyword"},
+                        "name": {"type": "text"},
+                        "email": {"type": "keyword"},
+                        "password": {"type": "text"},
+                    }
+                },
+            },
+        )

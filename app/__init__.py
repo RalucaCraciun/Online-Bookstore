@@ -12,8 +12,10 @@ from app.config import get_api_settings, settings
 from app.routers.books import books_router
 from app.routers.cart import cart_router
 from app.routers.orders import orders_router
+from app.routers.auth import auth_router
 # from app.elasticsearch.elastic import create_es_client, es_client  # Import Elasticsearch functions
 from app.elasticsearch.elastic import es_connect
+
 
 api_settings = get_api_settings()
 
@@ -84,6 +86,13 @@ def start_app() -> FastAPI:
     #     if es_client:
     #         es_client.close()
     #         print("Elasticsearch client closed.")
+
+    application.include_router(
+        auth_router,
+        prefix='',
+        tags=['auth'],
+        dependencies=[]
+    )
 
     application.include_router(
         books_router,

@@ -5,9 +5,12 @@
 - [ ] Backend ( FastAPI )
 
 ## Backend
- - [ ] /register
- - [ ] /login
- - [ ] /users
+ - [x] /register
+ - [x] /login
+ - [x] /logout
+ - [x] /users
  - [x] /books
  - [x] /cart
  - [ ] /orders
+ - [ ] status code for each
+ - [ ] update readme.md / HowTo.md

@@ -20,3 +20,4 @@
 6. Enter on ```http://localhost:8000/swagger```
    There will be available every endpoint.
    ![Swagger](images/Swagger.jpg)
+

@@ -20,9 +20,9 @@ services:
       - "9300:9300"
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9200/_cluster/health" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 20s
+      timeout: 10s
+      retries: 10
       start_period: 30s
     networks:
       - network_fast_api
