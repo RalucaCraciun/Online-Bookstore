@@ -5,3 +5,6 @@ fastapi[standard]==0.115.5
 passlib==1.7.4
 PyJWT==2.10.1
 python-jose==3.3.0
+httpx==0.28.0
+pytest==8.3.4
+requests==2.32.3

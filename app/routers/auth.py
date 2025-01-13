@@ -10,19 +10,19 @@ from jose import jwt, JWTError
 auth_router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-
 SECRET_KEY = "ABC"
 ALGORITHM = "HS256"
 
 
 # Routes
-@auth_router.post("/register", status_code=status.HTTP_201_CREATED)
+@auth_router.post("/register")
 async def register_user(name: str, email: str, password: str):
     """
     Register a new user.
     """
     user_manager = UserManager()
     user_data = {"name": name, "email": email, "password": password}
+    print("here", user_data)
     return user_manager.register_user(user_data)
 
 

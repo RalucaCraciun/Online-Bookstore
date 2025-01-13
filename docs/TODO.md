@@ -2,7 +2,7 @@
 
 - [x] Swagger
 - [x] ReadME.md
-- [ ] Backend ( FastAPI )
+- [x] Backend ( FastAPI )
 
 ## Backend
  - [x] /register
@@ -11,6 +11,6 @@
  - [x] /users
  - [x] /books
  - [x] /cart
- - [ ] /orders
- - [ ] status code for each
- - [ ] update readme.md / HowTo.md
+ - [x] /orders
+ - [x] status code for each
+ - [x] update readme.md / HowTo.md

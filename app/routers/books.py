@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 from app.crud.books_manage import BooksManager
 from app.models.BookModel import BookRequest, Book
 from typing import Dict
@@ -7,17 +7,23 @@ from typing import Dict
 books_router = APIRouter()
 
 
-@books_router.get("/books", response_model=Dict)
+@books_router.get("/books", response_model=Dict, status_code=status.HTTP_200_OK)
 async def retrieve_books():
     """
     Retrieve a list of books.
     """
     manager = BooksManager()
-    books = manager.retrieve_books()
-    return {"books": books}
+    try:
+        books = manager.retrieve_books()
+        return {"books": books}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve books. Error: {str(e)}"
+        )
 
 
-@books_router.post("/books", response_model=Book)
+@books_router.post("/books", response_model=Book, status_code=status.HTTP_201_CREATED)
 async def add_book(book_data: BookRequest):
     """
     Add a new book to the store.
@@ -33,17 +39,23 @@ async def add_book(book_data: BookRequest):
     }
     """
     manager = BooksManager()
-    book_dict = book_data.dict()
-    book_id = manager.add_book(book_dict)
+    try:
+        book_dict = book_data.dict()
+        book_id = manager.add_book(book_dict)
 
-    return {
-        "bookId": book_id,
-        **book_dict,
-        "rating": None  # Optional field
-    }
+        return {
+            "bookId": book_id,
+            **book_dict,
+            "rating": None  # Optional field
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to add book. Error: {str(e)}"
+        )
 
 
-@books_router.get("/books/{bookId}", response_model=Dict)
+@books_router.get("/books/{bookId}", response_model=Dict, status_code=status.HTTP_200_OK)
 async def retrieve_book_details(bookId: str):
     """
     Retrieve details of a specific book.
@@ -66,11 +78,17 @@ async def retrieve_book_details(bookId: str):
     }
     """
     manager = BooksManager()
-    book = manager.retrieve_book_by_id(bookId)
-    return {"book": book}
+    try:
+        books = manager.retrieve_book_by_id(bookId)
+        return {"book": books}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve books. Error: {str(e)}"
+        )
 
 
-@books_router.put("/books/{bookId}", response_model=Dict)
+@books_router.put("/books/{bookId}", response_model=Dict, status_code=status.HTTP_200_OK)
 async def update_book_details(bookId: str, updated_data: Dict):
     """
     Update details of a book.
@@ -97,16 +115,17 @@ async def update_book_details(bookId: str, updated_data: Dict):
             }
         else:
             raise HTTPException(
-                status_code=404,
-                detail=f"Failed to update book with ID {bookId}. It may not exist."
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Book with ID {bookId} not found."
             )
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"An error occurred while updating the book: {str(e)}"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update book. Error: {str(e)}"
         )
 
 
-@books_router.delete("/books/{bookId}", response_model=Dict)
+@books_router.delete("/books/{bookId}", response_model=Dict, status_code=status.HTTP_200_OK)
 async def delete_book(bookId: str):
     """
     Delete a book.
@@ -120,5 +139,16 @@ async def delete_book(bookId: str):
     }
     """
     manager = BooksManager()
-    result = manager.delete_book(bookId)
-    return result
+    try:
+        result = manager.delete_book(bookId)
+        return result
+    except HTTPException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Book with ID {bookId} not found."
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete book. Error: {str(e)}"
+        )
