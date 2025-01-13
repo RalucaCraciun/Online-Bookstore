@@ -11,10 +11,12 @@ from starlette.responses import JSONResponse
 from app.config import get_api_settings, settings
 from app.routers.books import books_router
 from app.routers.cart import cart_router
-from app.routers.orders import orders_router
+from app.routers.order import order_router
 from app.routers.auth import auth_router
 # from app.elasticsearch.elastic import create_es_client, es_client  # Import Elasticsearch functions
 from app.elasticsearch.elastic import es_connect
+from fastapi.openapi.utils import get_openapi
+import yaml
 
 
 api_settings = get_api_settings()
@@ -109,7 +111,7 @@ def start_app() -> FastAPI:
     )
 
     application.include_router(
-        orders_router,
+        order_router,
         prefix='',
         tags=['orders'],
         dependencies=[]
@@ -134,3 +136,13 @@ def wait_for_es(es: Elasticsearch, retries: int = 5, delay: int = 5):
 
 
 app = start_app()
+
+# openapi_schema = get_openapi(
+#     title=api_settings.title,
+#     version=api_settings.version,
+#     description=api_settings.description,
+#     routes=app.routes
+# )
+#
+# with open("openapi.yaml", "w") as yaml_file:
+#     yaml.dump(openapi_schema, yaml_file, default_style=False)

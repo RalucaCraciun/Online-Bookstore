@@ -63,6 +63,18 @@ class CartManager:
                 status_code=500, detail=f"Failed to update cart. Error: {str(e)}"
             )
 
+    def clear_cart(self, user_id: str) -> None:
+        """
+        Clear the cart for the user after an order is placed.
+        """
+        try:
+            empty_cart = {"items": [], "totalPrice": 0.0}
+            self.es.index(index=self.index, id=user_id, document=empty_cart)
+        except Exception as e:
+            raise HTTPException(
+                status_code=500, detail=f"Failed to clear cart. Error: {str(e)}"
+            )
+
     def update_total_price(self):
         """
         Calculate the total price of the cart.
